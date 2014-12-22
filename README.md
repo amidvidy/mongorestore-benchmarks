@@ -69,11 +69,11 @@ We used AWS m3.large.
 
 - Now on **MONGOS HOST** set up dat sharding
 
-```mongo 27019```
+``` mongo 27019 ```
 
-```sh.addShard("<mongoD host>:27018") ```
+``` sh.addShard("<mongoD host>:27018") ```
 
-```sh.enableSharding("benchdb1")```
+``` sh.enableSharding("benchdb1") ```
 
 ```for (var i = 0; i < 64; i++) { sh.shardCollection("benchdb1.COL-" + i", {"shardkey": "hashed"}); }```
 
