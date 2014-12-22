@@ -71,7 +71,7 @@ We used AWS m3.large.
 
 ```mongo 27019```
 
-```sh.addShard("<mongoD host>:27018")```
+```sh.addShard("<mongoD host>:27018") ```
 
 ```sh.enableSharding("benchdb1")```
 
