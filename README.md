@@ -25,7 +25,6 @@ We used AWS m3.large.
 
 ```sudo apt-get install numactl```
 
-```echo 0 > /proc/sys/vm/zone_reclaim_mode```
 ```sudo su root -c "echo 0 > /proc/sys/vm/zone_reclaim_mode"```
 
 - Disable transparent hugepages
@@ -35,6 +34,7 @@ We used AWS m3.large.
 - Create scratch directory on ephemeral storage
 
 ```sudo mkdir /mnt/data```
+
 ```sudo chown ubuntu /mnt/data/```
 
 ### Per-Configuration Setup
@@ -46,6 +46,35 @@ We used AWS m3.large.
 ```mkdir /mnt/data/mongo-standalone```
 
 ```numactl --interleave=all mongod --dbpath /mnt/data/mongo-standalone --logpath /mnt/data/mongo-standalone/mongo-standalone.log --logappend --storageEngine=wiredtiger --fork```
+
+#### Configuration B (Single Shard)
+
+- On **MONGOD HOST** start a config server on port 27019
+
+```mkdir /mnt/data/configsvr```
+
+```numactl --interleave=all mongod --dbpath /mnt/data/configsvr --logpath /mnt/data/configsvr/configsvr.log --logappend --storageEngine=wiredtiger --port 27019 --fork```
+
+- On **MONGOS HOST** start a mongos on port 27017
+
+```mkdir /mnt/data/mongos```
+
+```numactl --interleave=all mongos --configdb <hostname of MONGOD HOST>:27019 --logpath /mnt/data/mongos/mongos.log --fork```
+
+- On **MONGOD HOST** start a mongod on port 27018
+
+```mkdir /mnt/data/mongod-shard1```
+
+```numactl --interleave=all mongod --dbpath /mnt/data/mongod-shard1 --logpath /mnt/data/mongod-shard1/mongod-shard1.log --logappend --storageEngine=wiredtiger --port 27018 --fork```
+
+- Now on **MONGOS HOST** set up dat sharding
+
+```mongo 27019```
+
+```sh.addShard("<mongoD host>:27018")```
+```sh.enableSharding("benchdb1")```
+
+
 
 
 ## Running a trial

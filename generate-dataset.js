@@ -1,5 +1,5 @@
 var NCOLLECTIONS = 64;
-var TOTAL_DATA_SIZE_BYTES = 2 * (1 << 30);
+var TOTAL_DATA_SIZE_BYTES = 6 * (1 << 30); // 6GB
 
 function randomString(len) {
     var charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -41,8 +41,7 @@ var db = db.getSiblingDB("benchdb1")
 print("Inserting " + DOCS_PER_COLLECTION + " docs per collection")
 
 for (var i = 0; i < NCOLLECTIONS; ++i) {
-next:
-  var col = db.getCollection("COL-" + randomString(10))
+  var col = db.getCollection("COL-" + i);
   for (var j = 0; j < DOCS_PER_COLLECTION;) {
     var bulk = col.initializeUnorderedBulkOp();
     var k; // need to print k after for loop
