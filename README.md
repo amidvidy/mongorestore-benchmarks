@@ -45,7 +45,7 @@ We used AWS m3.large.
 
 ```mkdir /mnt/data/mongo-standalone```
 
-```numactl --interleave=all mongod --dbpath /mnt/data/mongo-standalone --logpath /mnt/data/mongo-standalone/mongo-standalone.log --logappend --fork```
+```numactl --interleave=all mongod --dbpath /mnt/data/mongo-standalone --logpath /mnt/data/mongo-standalone/mongo-standalone.log --logappend --storageEngine=wiredtiger --fork```
 
 
 ## Running a trial
