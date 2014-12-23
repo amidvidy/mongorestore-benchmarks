@@ -21,10 +21,10 @@ MAX_PARALLEL_COLLECTIONS = 64
 
 def trial(parallelCollections):
     print(BAR)
-    print("Trial Starting - params: TODO")
+    print("Trial Starting - params: numParallelCollections = {}".format(parallelCollections))
     if SHARDED:
         print("dropping DB and resharding...")
-        subprocess.call([MONGO, "dropAndReshard.js"])
+        subprocess.call([MONGO, "{}:{}".format(HOST, PORT), "dropAndReshard.js"])
     print("starting mongorestore...")
     start = time.time()
     subprocess.call([MONGORESTORE,
