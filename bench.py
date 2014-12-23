@@ -40,7 +40,7 @@ def trial(parallelCollections):
         # we would need to reshard the collection
         restoreOpts.append("--drop")
 
-    subprocess.call()
+    subprocess.call(restoreOpts)
     total = time.time() - start
     print("...restore completed in {} seconds".format(total))
     return total
