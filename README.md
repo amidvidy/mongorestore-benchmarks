@@ -53,7 +53,7 @@ We used AWS m3.large.
 
 ```mkdir /mnt/data/configsvr```
 
-```numactl --interleave=all mongod --dbpath /mnt/data/configsvr --logpath /mnt/data/configsvr/configsvr.log --logappend --storageEngine=wiredtiger --port 27019 --fork```
+```numactl --interleave=all mongod --configsvr --dbpath /mnt/data/configsvr --logpath /mnt/data/configsvr/configsvr.log --logappend --storageEngine=wiredtiger --port 27019 --fork```
 
 - On **MONGOS HOST** start a mongos on port 27017
 
@@ -69,12 +69,39 @@ We used AWS m3.large.
 
 - Now on **MONGOS HOST** set up dat sharding
 
-``` mongo 27019 ```
+``` mongo ```
 
 ``` sh.addShard("<mongoD host>:27018") ```
 
 ``` sh.enableSharding("benchdb1") ```
 
 ```for (var i = 0; i < 64; i++) { sh.shardCollection("benchdb1.COL-" + i", {"shardkey": "hashed"}); }```
+
+#### Configuration C (3 Shards)
+
+Now we have 4 total hosts.
+- MongoS/Mongorestore host. This will be generating the load
+- 3x MongoD + Config hosts. These will be storing dat data
+_______________________
+
+- On each **MongoD Host** start a config server on port 27019
+
+```mkdir /mnt/data/configsvr```
+
+```numactl --interleave=all mongod --configsvr --dbpath /mnt/data/configsvr --logpath /mnt/data/configsvr/configsvr.log --logappend --storageEngine=wiredtiger --port 27019 --fork```
+
+- Then start a shard on port 27018
+
+```mkdir /mnt/data/mongod-shard```
+
+```numactl --interleave=all mongod --dbpath /mnt/data/mongod-shard --logpath /mnt/data/mongod-shard/mongod-shard.log --logappend --storageEngine=wiredtiger --port 27018 --fork```
+
+- On the **MongoS Host** start a mongos on port 27017
+
+```mkdir /mnt/data/mongos```
+
+```numactl --interleave=all mongos --configdb <hostname of MONGOD HOST1>:27019,<hostname of MONGOD HOST2>:27019,<hostname of MONGODHOST3>:27019 --logpath /mnt/data/mongos/mongos.log --fork```
+
+Then enable sharding as done in configuration B, but execute `sh.addShard(...)` once for each shard.
 
 ## Running a trial
