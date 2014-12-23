@@ -27,13 +27,20 @@ def trial(parallelCollections):
         subprocess.call([MONGO, "{}:{}".format(HOST, PORT), "dropAndReshard.js"])
     print("starting mongorestore...")
     start = time.time()
-    subprocess.call([MONGORESTORE,
-                     "--dir=benchdb1",
-                     "--db=benchdb1",
-                     "--host={}".format(HOST),
-                     "--numParallelCollections={}".format(parallelCollections),
-                     "--drop", # drop collections before restoring to account for old runs
-    ])
+
+    restoreOpts = [MONGORESTORE,
+                   "--dir=benchdb1",
+                   "--db=benchdb1",
+                   "--host={}".format(HOST),
+                   "--numParallelCollections={}".format(parallelCollections),
+    ]
+
+    if not SHARDED:
+        # on a sharded collection we use dropAndReshard, running with --drop would actually be wrong since
+        # we would need to reshard the collection
+        restoreOpts.append("--drop")
+
+    subprocess.call()
     total = time.time() - start
     print("...restore completed in {} seconds".format(total))
     return total
