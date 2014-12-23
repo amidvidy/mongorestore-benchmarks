@@ -7,9 +7,12 @@ import itertools
 
 BAR = "=" * 80
 
+MONGO= '.'
 MONGORESTORE= '/Users/amidvidy/Documents/gitroot/mongo-tools/bin/mongorestore'
 HOST= 'localhost'
 PORT= '27017'
+
+SHARDED = True
 
 OUT_FILE='results-{}.csv'.format(time.time())
 
@@ -19,9 +22,14 @@ MAX_PARALLEL_COLLECTIONS = 64
 def trial(parallelCollections):
     print(BAR)
     print("Trial Starting - params: TODO")
+    if SHARDED:
+        print("dropping DB and resharding...")
+        subprocess.call([MONGO, "dropAndReshard.js"])
     print("starting mongorestore...")
     start = time.time()
     subprocess.call([MONGORESTORE,
+                     "--dir=benchdb1",
+                     "--db=benchdb1",
                      "--host={}".format(HOST),
                      "--numParallelCollections={}".format(parallelCollections),
                      "--drop", # drop collections before restoring to account for old runs
@@ -41,6 +49,7 @@ def main():
                 'elapsedTime': trial(parallelCollections),
             }
             writer.writerow(run)
+            outfile.flush()
             parallelCollections *= 2
 
 if __name__ == '__main__':
