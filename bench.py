@@ -7,9 +7,9 @@ import itertools
 
 BAR = "=" * 80
 
-MONGORESTORE= '<path to mongorestore>'
-HOST= '<ip or hostname of host running mongod or mongos>'
-PORT= '<port of host running mongod or mongos>'
+MONGORESTORE= '/Users/amidvidy/Documents/gitroot/mongo-tools/bin/mongorestore'
+HOST= 'localhost'
+PORT= '27017'
 
 OUT_FILE='results-{}.csv'.format(time.time())
 
@@ -41,7 +41,7 @@ def main():
                 'elapsedTime': trial(parallelCollections),
             }
             writer.writerow(run)
-        parallelCollections *= 2
+            parallelCollections *= 2
 
 if __name__ == '__main__':
     main()
